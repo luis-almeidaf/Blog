@@ -1,7 +1,6 @@
 @page "/articles/create"
 @using Blazilla
 @using Blog.Application.Features.Articles.Commands.CreateArticle
-@using Blog.Domain.Entities
 @using MediatR
 @inject IMediator Mediator
 @inject NavigationManager Navigation
@@ -15,13 +14,13 @@
     <div class="mb-3">
         <label>Title</label>
         <InputText @bind-Value="Command.Title" class="form-control"/>
-        <ValidationMessage For="@(() => Command.Title)" />
+        <ValidationMessage For="@(() => Command.Title)"/>
     </div>
 
     <div class="mb-3">
         <label>Content</label>
         <InputTextArea @bind-Value="Command.Content" class="form-control" rows="10"/>
-        <ValidationMessage For="@(() =>  Command.Content)"/>
+        <ValidationMessage For="@(() => Command.Content)"/>
     </div>
 
     <div class="mb-3">
@@ -52,5 +51,4 @@
 
         Navigation.NavigateTo("/");
     }
-
 }

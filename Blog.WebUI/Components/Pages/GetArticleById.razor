@@ -1,0 +1,26 @@
+@page "/articles/{ArticleId:guid}"
+@using Blog.Application.Features.Articles.Queries.GetArticleById
+@using MediatR
+@inject IMediator Mediator
+
+@if (_articleResponse is null)
+{
+    <p>Carregando...</p>
+}
+else
+{
+    <h1>@_articleResponse.Title</h1>
+    <p>@_articleResponse.Content</p>
+}
+
+@code {
+    [Parameter] public Guid ArticleId { get; set; }
+
+    private GetArticleByIdQueryResponse? _articleResponse;
+
+    protected override async Task OnInitializedAsync()
+    {
+        _articleResponse = await Mediator.Send(new GetArticleByIdQuery { Id = ArticleId });
+    }
+
+}

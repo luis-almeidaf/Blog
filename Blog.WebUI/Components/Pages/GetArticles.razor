@@ -1,0 +1,32 @@
+@page "/"
+@using Blog.Application.Features.Articles.Queries.GetArticles
+@using MediatR
+@inject IMediator Mediator
+
+<h3>Ola</h3>
+
+@if (!ArticlesResponse.Articles.Any())
+{
+    <p><em>Carregando artigos ou nenhum artigo encontrado..</em></p>
+}
+else
+{
+    @foreach (var article in ArticlesResponse.Articles)
+    {
+        <div>
+            <h4>Titulo: @article.Title</h4>
+            <p>@article.CreatedAt</p>
+            <a href="/articles/@article.Id">Leia o post completo aqui</a>
+        </div>
+    }
+}
+
+@code {
+    private GetArticlesQueryResponse ArticlesResponse { get; set; } = new() { Articles = [] };
+
+    protected override async Task OnInitializedAsync()
+    {
+        ArticlesResponse = await Mediator.Send(new GetArticlesQuery());
+    }
+
+}
