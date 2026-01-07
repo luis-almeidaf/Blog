@@ -17,4 +17,10 @@
         <ProjectReference Include="..\Blog.Infrastructure\Blog.Infrastructure.csproj"/>
     </ItemGroup>
 
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Components\Pages\Articles\New.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
+      <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
+    </ItemGroup>
+
 </Project>
