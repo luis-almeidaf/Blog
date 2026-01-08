@@ -1,0 +1,52 @@
+@page "/articles/create"
+@using Blazilla
+@using Blog.Application.Features.Articles.Commands.CreateArticle
+@using MediatR
+@inject IMediator Mediator
+@inject NavigationManager Navigation
+
+<h3>Create Article</h3>
+
+<EditForm Model="@Command" OnValidSubmit="HandleValidSubmit" FormName="createArticleForm">
+    <FluentValidator/>
+    <ValidationSummary/>
+
+    <div class="mb-3">
+        <label>Title</label>
+        <InputText @bind-Value="Command.Title" class="form-control"/>
+        <ValidationMessage For="@(() => Command.Title)"/>
+    </div>
+
+    <div class="mb-3">
+        <label>Content</label>
+        <InputTextArea @bind-Value="Command.Content" class="form-control" rows="10"/>
+        <ValidationMessage For="@(() => Command.Content)"/>
+    </div>
+
+    <div class="mb-3">
+        <label>Tags</label>
+        <InputText @bind-Value="TagNamesString" class="form-control" placeholder="ex: dotnet, csharp, tutorial, back-end"/>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Publicar artigo</button>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm] private CreateArticleCommand Command { get; set; } = new();
+    [SupplyParameterFromForm] private string TagNamesString { get; set; } = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        if (!string.IsNullOrWhiteSpace(TagNamesString))
+        {
+            Command.TagNames = TagNamesString
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Trim())
+                .ToList();
+        }
+
+        await Mediator.Send(Command);
+
+        Navigation.NavigateTo("/");
+    }
+}

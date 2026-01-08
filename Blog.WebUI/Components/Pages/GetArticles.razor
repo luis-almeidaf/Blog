@@ -1,0 +1,84 @@
+@page "/"
+@using Blog.Application.Features.Articles.Commands.ArchiveArticle
+@using Blog.Application.Features.Articles.Commands.UnarchiveArticle
+@using Blog.Application.Features.Articles.Queries.GetArticles
+@using MediatR
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject IJSRuntime Js
+
+<h3>Gerenciamento de Artigos</h3>
+
+@if (!ArticlesResponse.Articles.Any())
+{
+    <p><em>Carregando artigos ou nenhum artigo encontrado...</em></p>
+}
+else
+{
+    <section>
+        <h3>Não Arquivados</h3>
+        <hr />
+        @foreach (var article in ArticlesResponse.Articles.Where(a => !a.IsArchived))
+        {
+            <div class="mb-3 border p-2">
+                <h4>@article.Title</h4>
+                <p>Postado em: @article.CreatedAt</p>
+                <a href="/articles/@article.Id">Leia o post completo aqui</a> 
+                <button class="btn btn-warning btn-sm" @onclick="() => HandleArchive(article.Id)">
+                    Arquivar
+                </button>
+            </div>
+        }
+    </section>
+
+    <section class="mt-5">
+        <h3>Arquivados</h3>
+        <hr />
+        @foreach (var article in ArticlesResponse.Articles.Where(a => a.IsArchived))
+        {
+            <div class="mb-3 border p-2 text-muted">
+                <h4>@article.Title</h4>
+                <p>Postado em: @article.CreatedAt</p>
+                <a href="/articles/@article.Id">Leia o post completo aqui</a> 
+                <button class="btn btn-secondary btn-sm" @onclick="() => HandleUnarchive(article.Id)">
+                    Desarquivar
+                </button>
+            </div>
+        }
+    </section>
+}
+
+@code {
+    private GetArticlesQueryResponse ArticlesResponse { get; set; } = new() { Articles = [] };
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadArticles();
+    }
+
+    private async Task LoadArticles()
+    {
+        ArticlesResponse = await Mediator.Send(new GetArticlesQuery());
+    }
+
+    private async Task HandleArchive(Guid id)
+    {
+        var confirmed = await Js.InvokeAsync<bool>("confirm", "Tem certeza que deseja arquivar esse artigo?");
+        if (confirmed)
+        {
+            await Mediator.Send(new ArchiveArticleCommand { ArticleId = id });
+            await LoadArticles();
+        }
+    }
+    
+    private async Task HandleUnarchive(Guid id)
+    {
+        var confirmed = await Js.InvokeAsync<bool>("confirm", "Tem certeza que deseja desarquivar esse artigo?");
+        if (confirmed)
+        {
+            await Mediator.Send(new UnarchiveArticleCommand() { ArticleId = id });
+            await LoadArticles();
+        }
+    }
+
+}

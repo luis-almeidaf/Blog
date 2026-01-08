@@ -1,3 +1,4 @@
+using Blog.Application;
 using Blog.Infrastructure;
 using Blog.WebUI.Components;
 
@@ -8,6 +9,7 @@ builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
 
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddApplication();
 
 var app = builder.Build();
 
