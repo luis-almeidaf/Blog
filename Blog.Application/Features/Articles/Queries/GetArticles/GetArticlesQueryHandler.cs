@@ -18,6 +18,7 @@ public class GetArticlesQueryHandler(IArticleReadOnlyRepository repository)
                 Id = article.Id,
                 Title = article.Title,
                 CreatedAt = article.CreatedAt,
+                IsArchived =  article.IsArchived,
             });
         }
         

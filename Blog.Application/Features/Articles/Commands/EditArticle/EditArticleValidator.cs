@@ -1,10 +1,10 @@
 using FluentValidation;
 
-namespace Blog.Application.Features.Articles.Commands.CreateArticle;
+namespace Blog.Application.Features.Articles.Commands.EditArticle;
 
-public class CreateArticleValidator : AbstractValidator<CreateArticleCommand>
+public class EditArticleValidator : AbstractValidator<EditArticleViewModel>
 {
-    public CreateArticleValidator()
+    public EditArticleValidator()
     {
         RuleFor(article => article.Title).NotEmpty().WithMessage("Title is required");
         RuleFor(article => article.Content).NotEmpty().WithMessage("Content is required");

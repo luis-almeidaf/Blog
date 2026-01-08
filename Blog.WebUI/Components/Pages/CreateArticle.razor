@@ -25,8 +25,7 @@
 
     <div class="mb-3">
         <label>Tags</label>
-        <InputText @bind-Value="TagNamesString" class="form-control"
-                   placeholder="ex: dotnet, csharp, tutorial, back-end"/>
+        <InputText @bind-Value="TagNamesString" class="form-control" placeholder="ex: dotnet, csharp, tutorial, back-end"/>
     </div>
 
     <button type="submit" class="btn btn-primary">Publicar artigo</button>
@@ -34,7 +33,6 @@
 
 @code {
     [SupplyParameterFromForm] private CreateArticleCommand Command { get; set; } = new();
-
     [SupplyParameterFromForm] private string TagNamesString { get; set; } = string.Empty;
 
     private async Task HandleValidSubmit()
@@ -42,7 +40,7 @@
         if (!string.IsNullOrWhiteSpace(TagNamesString))
         {
             Command.TagNames = TagNamesString
-                .Split(' ', StringSplitOptions.RemoveEmptyEntries)
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
                 .Select(x => x.Trim())
                 .ToList();
         }

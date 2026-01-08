@@ -1,0 +1,86 @@
+@page "/articles/{ArticleId:guid}/edit"
+@using Blazilla
+@using Blog.Application.Features.Articles.Commands.EditArticle
+@using Blog.Application.Features.Articles.Queries.GetArticleById
+@using MediatR
+@inject IMediator Mediator
+@inject NavigationManager Navigation
+
+<h3>Editar Artigo</h3>
+<p>Debug Title: @ViewModel.Title</p>
+
+<EditForm Model="@ViewModel" OnValidSubmit="HandleValidSubmit" FormName="editArticleForm">
+    <FluentValidator/>
+    <ValidationSummary/>
+
+    <div class="mb-3">
+        <label>Title</label>
+        <InputText @bind-Value="ViewModel.Title" class="form-control"/>
+        <ValidationMessage For="@(() => ViewModel.Title)"/>
+    </div>
+
+    <div class="mb-3">
+        <label>Content</label>
+        <InputTextArea @bind-Value="ViewModel.Content" class="form-control" rows="10"/>
+        <ValidationMessage For="@(() => ViewModel.Content)"/>
+    </div>
+
+    <div class="mb-3">
+        <label>Tags</label>
+        <InputText @bind-Value="TagNamesString" class="form-control" placeholder="ex: dotnet, csharp, tutorial, back-end"/>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Atualizar</button>
+</EditForm>
+
+
+@code {
+    [Parameter] public Guid ArticleId { get; set; }
+    [SupplyParameterFromForm] private EditArticleViewModel ViewModel { get; set; } = new();
+    [SupplyParameterFromForm] private string TagNamesString { get; set; } = string.Empty;
+    [CascadingParameter] public HttpContext? HttpContext { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        var isPost = HttpContext?.Request.Method == "POST";
+
+        if (!isPost)
+        {
+            var article = await Mediator.Send(new GetArticleByIdQuery { Id = ArticleId });
+
+            ViewModel = new EditArticleViewModel
+            {
+                Id = article.Id,
+                Title = article.Title,
+                Content = article.Content,
+            };
+
+            if (article.Tags.Any())
+                TagNamesString = string.Join(", ", article.Tags.Select(t => t.Name));
+        }
+    }
+
+    private async Task HandleValidSubmit()
+    {
+        var command = new EditArticleCommand
+        {
+            ArticleId = ArticleId,
+            Title = ViewModel.Title,
+            Content = ViewModel.Content,
+            TagNames = []
+        };
+
+        if (!string.IsNullOrWhiteSpace(TagNamesString))
+        {
+            command.TagNames = TagNamesString
+                .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                .Select(x => x.Trim())
+                .ToList();
+        }
+
+        await Mediator.Send(command);
+
+        Navigation.NavigateTo($"/articles/{ArticleId}");
+    }
+
+}

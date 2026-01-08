@@ -1,4 +1,3 @@
-using Blog.Application.Features.Articles.Queries.GetArticles;
 using MediatR;
 
 namespace Blog.Application.Features.Articles.Queries.GetArticleById;

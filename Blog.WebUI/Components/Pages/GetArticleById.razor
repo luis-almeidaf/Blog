@@ -11,6 +11,12 @@ else
 {
     <h1>@_articleResponse.Title</h1>
     <p>@_articleResponse.Content</p>
+    foreach (var tag in _articleResponse.Tags)
+    {
+        <p>@tag.Name</p>
+    }
+
+    <a href="/articles/@ArticleId/edit">Editar</a>
 }
 
 @code {
@@ -22,5 +28,4 @@ else
     {
         _articleResponse = await Mediator.Send(new GetArticleByIdQuery { Id = ArticleId });
     }
-
 }

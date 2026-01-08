@@ -7,7 +7,6 @@ public class Article
     public string Content { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     public DateTime? UpdatedAt { get; set; }
-    public bool IsPublished { get; set; } = true;
-    public bool IsDeleted { get; set; } = false;
+    public bool IsArchived { get; set; } = false;
     public ICollection<Tag> Tags { get; set; } = [];
 }

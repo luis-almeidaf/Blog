@@ -1,6 +1,6 @@
 using System.Reflection;
 using Blog.Application.Features.Articles.Commands.CreateArticle;
-using Blog.Domain.Entities;
+using Blog.Application.Features.Articles.Commands.EditArticle;
 using FluentValidation;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -12,5 +12,6 @@ public static class DependencyInjectionExtension
     {
         services.AddMediatR(config => config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly()));
         services.AddSingleton<IValidator<CreateArticleCommand>, CreateArticleValidator>();
+        services.AddSingleton<IValidator<EditArticleViewModel>, EditArticleValidator>();
     }
 }
