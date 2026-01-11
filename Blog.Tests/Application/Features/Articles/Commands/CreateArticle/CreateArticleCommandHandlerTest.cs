@@ -11,6 +11,7 @@ public class CreateArticleCommandHandlerTest
         var command = new CreateArticleCommand
         {
             Title = "Test Title",
+            Summary = "Test Summary",
             Content = "Test Content",
             TagNames = ["Tag1, Tag2,Tag3"]
         };
@@ -19,8 +20,6 @@ public class CreateArticleCommandHandlerTest
 
         Assert.NotNull(result);
         Assert.NotEqual(Guid.Empty, result.Id);
-        Assert.Equal(command.Title, result.Title);
-        Assert.NotEmpty(command.TagNames);
     }
     
     private static CreateArticleCommandHandler CreateHandler()

@@ -1,31 +1,109 @@
 @page "/articles/{ArticleId:guid}"
+@using Blog.Application.Features.Articles.Commands.ArchiveArticle
+@using Blog.Application.Features.Articles.Commands.UnarchiveArticle
 @using Blog.Application.Features.Articles.Queries.GetArticleById
+@using Markdig
 @using MediatR
+@rendermode InteractiveServer
 @inject IMediator Mediator
+@inject IJSRuntime Js
 
 @if (_articleResponse is null)
 {
-    <p>Carregando...</p>
+    <p>Carregando</p>
 }
 else
 {
-    <h1>@_articleResponse.Title</h1>
-    <p>@_articleResponse.Content</p>
-    foreach (var tag in _articleResponse.Tags)
+    <a href="/articles/@ArticleId/edit" class="btn btn-primary btn-sm">Editar</a>
+    <hr/>
+    @if (_articleResponse.IsArchived)
     {
-        <p>@tag.Name</p>
+        <div class="mb-3">
+            <button disabled class="btn btn-warning btn-sm">
+                Arquivar
+            </button>
+            <button class="btn btn-secondary btn-sm" @onclick="() => HandleUnarchive(ArticleId)">
+                Desarquivar
+            </button>
+        </div>
+    }
+    else
+    {
+        <div class="mb-3">
+            <button class="btn btn-warning btn-sm" @onclick="() => HandleArchive(ArticleId)">
+                Arquivar
+            </button>
+            <button disabled class="btn btn-secondary btn-sm">
+                Desarquivar
+            </button>
+        </div>
     }
 
-    <a href="/articles/@ArticleId/edit">Editar</a>
+    <!-- Cabeçalho do artigo -->
+    <header class="mb-4">
+        <h1 class="fw-bold mb-2">
+            @_articleResponse.Title
+        </h1>
+
+        <p class="text-muted mb-2">
+            @_articleResponse.CreatedAt.ToString("dd 'de' MMMM 'de' yyyy")
+        </p>
+
+        <p class="lead text-secondary">
+            @_articleResponse.Summary
+        </p>
+    </header>
+
+    <hr/>
+
+    <!-- Conteúdo do artigo -->
+    <section class="article-content">
+        @((MarkupString)Markdown.ToHtml(_articleResponse.Content))
+    </section>
+
+    <hr class="my-4"/>
+
+    <!-- Tags -->
+    @if (_articleResponse.Tags.Any())
+    {
+        <div class="d-flex flex-wrap gap-2">
+            @foreach (var tag in _articleResponse.Tags)
+            {
+                <span class="badge bg-light text-dark border">@tag.Name</span>
+            }
+        </div>
+    }
 }
 
-@code {
+
+@code
+{
     [Parameter] public Guid ArticleId { get; set; }
 
     private GetArticleByIdQueryResponse? _articleResponse;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnInitializedAsync() => await LoadArticle();
+
+    private async Task LoadArticle() => _articleResponse = await Mediator.Send(new GetArticleByIdQuery { Id = ArticleId });
+
+    private async Task HandleArchive(Guid id)
     {
-        _articleResponse = await Mediator.Send(new GetArticleByIdQuery { Id = ArticleId });
+        var confirmed = await Js.InvokeAsync<bool>("confirm", "Tem certeza que deseja arquivar esse artigo?");
+        if (confirmed)
+        {
+            await Mediator.Send(new ArchiveArticleCommand { ArticleId = id });
+            await LoadArticle();
+        }
+    }
+
+    private async Task HandleUnarchive(Guid id)
+    {
+        var confirmed = await Js.InvokeAsync<bool>("confirm", "Tem certeza que deseja desarquivar esse artigo?");
+        if (confirmed)
+        {
+            await Mediator.Send(new UnarchiveArticleCommand { ArticleId = id });
+            await LoadArticle();
+        }
     }
 }
+

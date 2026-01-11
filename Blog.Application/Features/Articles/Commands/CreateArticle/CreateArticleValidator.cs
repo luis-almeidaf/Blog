@@ -7,6 +7,7 @@ public class CreateArticleValidator : AbstractValidator<CreateArticleCommand>
     public CreateArticleValidator()
     {
         RuleFor(article => article.Title).NotEmpty().WithMessage("Title is required");
+        RuleFor(article => article.Summary).NotEmpty().WithMessage("Summary is required");
         RuleFor(article => article.Content).NotEmpty().WithMessage("Content is required");
     }
 }

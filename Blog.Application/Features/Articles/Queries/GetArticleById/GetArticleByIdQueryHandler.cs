@@ -16,7 +16,9 @@ public class GetArticleByIdQueryHandler(IArticleReadOnlyRepository repository)
         {
             Id = article.Id,
             Title = article.Title,
+            Summary = article.Summary,
             Content = article.Content,
+            IsArchived =  article.IsArchived,
             CreatedAt = article.CreatedAt,
             UpdatedAt = article.UpdatedAt,
             Tags = new List<Tag>()

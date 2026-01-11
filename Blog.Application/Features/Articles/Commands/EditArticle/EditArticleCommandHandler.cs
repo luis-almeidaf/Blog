@@ -14,6 +14,7 @@ public class EditArticleCommandHandler(
         var article = await repository.GetArticleById(request.ArticleId);
 
         article.Title = request.Title;
+        article.Summary = request.Summary;
         article.Content = request.Content;
         article.UpdatedAt = DateTime.UtcNow;
 

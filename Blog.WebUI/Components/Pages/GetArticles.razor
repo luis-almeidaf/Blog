@@ -1,84 +1,81 @@
 @page "/"
-@using Blog.Application.Features.Articles.Commands.ArchiveArticle
-@using Blog.Application.Features.Articles.Commands.UnarchiveArticle
 @using Blog.Application.Features.Articles.Queries.GetArticles
+@using Markdig
 @using MediatR
-@rendermode InteractiveServer
 @inject IMediator Mediator
-@inject IJSRuntime Js
 
-<h3>Gerenciamento de Artigos</h3>
+<section class="home-intro mb-5">
+    @((MarkupString)Markdown.ToHtml(
+        "### Seja bem vindo.\n" +
+        "Me chamo Luis, sou desenvolvedor back-end.\n\n" +
+        "Criei esse blog com o intuito de documentar um pouco dos meus aprendizados.\n\n" +
+        "Se algum artigo foi útil para você ou se tiver alguma sugestão de melhoria, fique à vontade para me adicionar no " +
+        "<a href=\"https://www.linkedin.com/in/luis-almeidaf/\" target=\"_blank\" rel=\"noopener noreferrer\">LinkedIn</a>. " +
+        "E acompanhar meus projetos no <a href=\"https://github.com/luis-almeidaf/\" target=\"_blank\" rel=\"noopener noreferrer\">Github</a>."
+    ))
+</section>
 
-@if (!ArticlesResponse.Articles.Any())
-{
-    <p><em>Carregando artigos ou nenhum artigo encontrado...</em></p>
-}
-else
-{
-    <section>
-        <h3>Não Arquivados</h3>
-        <hr />
-        @foreach (var article in ArticlesResponse.Articles.Where(a => !a.IsArchived))
-        {
-            <div class="mb-3 border p-2">
-                <h4>@article.Title</h4>
-                <p>Postado em: @article.CreatedAt</p>
-                <a href="/articles/@article.Id">Leia o post completo aqui</a> 
-                <button class="btn btn-warning btn-sm" @onclick="() => HandleArchive(article.Id)">
-                    Arquivar
-                </button>
-            </div>
-        }
-    </section>
+<hr class="my-4"/>
 
-    <section class="mt-5">
-        <h3>Arquivados</h3>
-        <hr />
-        @foreach (var article in ArticlesResponse.Articles.Where(a => a.IsArchived))
-        {
-            <div class="mb-3 border p-2 text-muted">
-                <h4>@article.Title</h4>
-                <p>Postado em: @article.CreatedAt</p>
-                <a href="/articles/@article.Id">Leia o post completo aqui</a> 
-                <button class="btn btn-secondary btn-sm" @onclick="() => HandleUnarchive(article.Id)">
-                    Desarquivar
-                </button>
-            </div>
-        }
-    </section>
-}
+<h5 class="mb-3">Artigos</h5>
+<div class="row g-3 mt-1">
+    @foreach (var article in ArticlesResponse.Articles.Where(a => !a.IsArchived))
+    {
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="/articles/@article.Id" class="text-decoration-none text-dark">
+                <div class="card h-70 shadow-sm article-card">
+                    <div class="card-body">
+                        <p class="card-text text-muted small mb-2">
+                            @article.CreatedAt.ToString("dd/MM/yyyy")
+                        </p>
+
+                        <h6 class="card-title fw-semibold mt-2">
+                            @article.Title
+                        </h6>
+
+                        <h7 class="card-title mt-2">
+                            @article.Summary
+                        </h7>
+                    </div>
+
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
+<hr class="my-5"/>
+
+<h5 class="mb-3">Arquivados</h5>
+<div class="row g-3">
+    @foreach (var article in ArticlesResponse.Articles.Where(a => a.IsArchived))
+    {
+        <div class="col-12 col-md-6 col-lg-4">
+            <a href="/articles/@article.Id" class="text-decoration-none text-muted">
+                <div class="card h-100 shadow-sm article-card">
+                    <div class="card-body">
+                        <p class="card-text small mb-2">
+                            @article.CreatedAt.ToString("dd/MM/yyyy")
+                        </p>
+
+                        <h6 class="card-title mt-2">
+                            @article.Title
+                        </h6>
+                    </div>
+
+                </div>
+            </a>
+        </div>
+    }
+</div>
+
 
 @code {
     private GetArticlesQueryResponse ArticlesResponse { get; set; } = new() { Articles = [] };
 
     protected override async Task OnInitializedAsync()
     {
-        await LoadArticles();
-    }
-
-    private async Task LoadArticles()
-    {
         ArticlesResponse = await Mediator.Send(new GetArticlesQuery());
-    }
-
-    private async Task HandleArchive(Guid id)
-    {
-        var confirmed = await Js.InvokeAsync<bool>("confirm", "Tem certeza que deseja arquivar esse artigo?");
-        if (confirmed)
-        {
-            await Mediator.Send(new ArchiveArticleCommand { ArticleId = id });
-            await LoadArticles();
-        }
-    }
-    
-    private async Task HandleUnarchive(Guid id)
-    {
-        var confirmed = await Js.InvokeAsync<bool>("confirm", "Tem certeza que deseja desarquivar esse artigo?");
-        if (confirmed)
-        {
-            await Mediator.Send(new UnarchiveArticleCommand() { ArticleId = id });
-            await LoadArticles();
-        }
     }
 
 }

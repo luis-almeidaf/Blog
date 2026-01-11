@@ -13,14 +13,16 @@ public class EditArticleCommandHandlerTest
         {
             Id = Guid.NewGuid(),
             Title = "Test Title",
+            Summary =  "Test Summary",
             Content = "Test Content",
         };
 
         var command = new EditArticleCommand()
         {
             ArticleId =  article.Id,
-            Title = "Test Title",
-            Content = "Test Content",
+            Title = "New Title",
+            Summary =  "New Summary",
+            Content = "New Content",
             TagNames = ["Tag1, Tag2,Tag3"]
         };
         var handler = CreateHandler(article);
@@ -36,14 +38,16 @@ public class EditArticleCommandHandlerTest
         {
             Id = Guid.NewGuid(),
             Title = "Test Title",
+            Summary =  "Test Summary",
             Content = "Test Content",
         };
 
         var command = new EditArticleCommand()
         {
             ArticleId =  article.Id,
-            Title = "Test Title",
-            Content = "Test Content",
+            Title = "New Title",
+            Content = "New Content",
+            Summary =  "New Summary",
             TagNames = ["Tag1, Tag2,Tag3"]
         };
         var fakeGuid = Guid.NewGuid();
