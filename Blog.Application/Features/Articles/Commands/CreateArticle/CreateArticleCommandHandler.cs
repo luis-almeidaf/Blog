@@ -15,6 +15,7 @@ public class CreateArticleCommandHandler(
         {
             Id = Guid.NewGuid(),
             Title = request.Title,
+            Summary = request.Summary,
             Content = request.Content,
         };
 
@@ -33,12 +34,7 @@ public class CreateArticleCommandHandler(
         await repository.Add(newArticle);
 
         await unitOfWork.CommitAsync();
-
-        return new CreateArticleResponse
-        {
-            Id = newArticle.Id,
-            Title = newArticle.Title,
-            CreatedAt = newArticle.CreatedAt
-        };
+        
+        return new CreateArticleResponse { Id = newArticle.Id };
     }
 }

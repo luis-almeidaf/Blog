@@ -16,6 +16,12 @@
         <InputText @bind-Value="Command.Title" class="form-control"/>
         <ValidationMessage For="@(() => Command.Title)"/>
     </div>
+    
+    <div class="mb-3">
+        <label>Summary</label>
+        <InputText @bind-Value="Command.Summary" class="form-control" placeholder="20 palavras - 130 caracteres"/>
+        <ValidationMessage For="@(() => Command.Summary)"/>
+    </div>
 
     <div class="mb-3">
         <label>Content</label>
@@ -45,8 +51,8 @@
                 .ToList();
         }
 
-        await Mediator.Send(Command);
+        var result = await Mediator.Send(Command);
 
-        Navigation.NavigateTo("/");
+        Navigation.NavigateTo($"/articles/{result.Id}");
     }
 }

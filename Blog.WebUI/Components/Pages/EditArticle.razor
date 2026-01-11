@@ -7,7 +7,6 @@
 @inject NavigationManager Navigation
 
 <h3>Editar Artigo</h3>
-<p>Debug Title: @ViewModel.Title</p>
 
 <EditForm Model="@ViewModel" OnValidSubmit="HandleValidSubmit" FormName="editArticleForm">
     <FluentValidator/>
@@ -15,8 +14,14 @@
 
     <div class="mb-3">
         <label>Title</label>
-        <InputText @bind-Value="ViewModel.Title" class="form-control"/>
+        <InputText @bind-Value="ViewModel.Title" class="form-control" />
         <ValidationMessage For="@(() => ViewModel.Title)"/>
+    </div>
+    
+    <div class="mb-3">
+        <label>Summary</label>
+        <InputText @bind-Value="ViewModel.Summary" class="form-control" placeholder="20 palavras - 130 caracteres"/>
+        <ValidationMessage For="@(() => ViewModel.Summary)"/>
     </div>
 
     <div class="mb-3">
@@ -52,6 +57,7 @@
             {
                 Id = article.Id,
                 Title = article.Title,
+                Summary = article.Summary,
                 Content = article.Content,
             };
 
@@ -66,6 +72,7 @@
         {
             ArticleId = ArticleId,
             Title = ViewModel.Title,
+            Summary = ViewModel.Summary,
             Content = ViewModel.Content,
             TagNames = []
         };
