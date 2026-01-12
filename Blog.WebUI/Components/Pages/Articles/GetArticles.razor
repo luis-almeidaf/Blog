@@ -73,9 +73,5 @@
 @code {
     private GetArticlesQueryResponse ArticlesResponse { get; set; } = new() { Articles = [] };
 
-    protected override async Task OnInitializedAsync()
-    {
-        ArticlesResponse = await Mediator.Send(new GetArticlesQuery());
-    }
-
+    protected override async Task OnInitializedAsync() => ArticlesResponse = await Mediator.Send(new GetArticlesQuery());
 }
