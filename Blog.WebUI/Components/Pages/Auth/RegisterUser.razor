@@ -1,0 +1,49 @@
+@page "/auth/register"
+@using Blazilla
+@using Blog.Application.Features.Auth.Commands.RegisterUserCommand
+@using Blog.WebUI.Authentication
+@using MediatR
+@rendermode InteractiveServer
+@inject IMediator Mediator
+@inject NavigationManager Navigation
+@inject CustomAuthenticationStateProvider AuthStateProvider
+
+<h3>Register User</h3>
+
+<EditForm Model="@Command" OnValidSubmit="HandleValidSubmit" FormName="createArticleForm">
+    <FluentValidator/>
+    <ValidationSummary/>
+
+    <div class="mb-3">
+        <label>Email</label>
+        <InputText @bind-Value="Command.Email" class="form-control"/>
+        <ValidationMessage For="@(() => Command.Email)"/>
+    </div>
+
+    <div class="mb-3">
+        <label>Password</label>
+        <InputText @bind-Value="Command.Password" class="form-control"/>
+        <ValidationMessage For="@(() => Command.Password)"/>
+    </div>
+
+    @if (!string.IsNullOrEmpty(Error))
+    {
+        <div class="alert alert-danger">@Error</div>
+    }
+
+    <button type="submit" class="btn btn-primary">Cadastrar</button>
+</EditForm>
+
+@code {
+    [SupplyParameterFromForm] private RegisterUserCommand Command { get; set; } = new();
+    [SupplyParameterFromForm] private string Error { get; set; } = string.Empty;
+
+    private async Task HandleValidSubmit()
+    {
+        var response = await Mediator.Send(Command);
+
+        await AuthStateProvider.MarkUserAsAuthenticated(response.Token!);
+
+        Navigation.NavigateTo($"/");
+    }
+}

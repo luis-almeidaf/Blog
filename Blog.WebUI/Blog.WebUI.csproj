@@ -7,6 +7,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <PackageReference Include="Blazored.LocalStorage" Version="4.3.0" />
         <PackageReference Include="Markdig" Version="0.44.0" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.11">
             <PrivateAssets>all</PrivateAssets>
@@ -29,6 +30,10 @@
       <_ContentIncludedByDefault Remove="Components\Pages\Articles\New.razor" />
       <_ContentIncludedByDefault Remove="Components\Pages\Error.razor" />
       <_ContentIncludedByDefault Remove="Components\Pages\Home.razor" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <AdditionalFiles Include="Components\Pages\Auth\RegisterUser.razor" />
     </ItemGroup>
 
 </Project>

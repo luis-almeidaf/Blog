@@ -4,6 +4,7 @@
 @using Blog.Application.Features.Articles.Queries.GetArticleById
 @using Markdig
 @using MediatR
+@using Microsoft.AspNetCore.Components.Authorization
 @rendermode InteractiveServer
 @inject IMediator Mediator
 @inject IJSRuntime Js
@@ -14,30 +15,32 @@
 }
 else
 {
-    <a href="/articles/@ArticleId/edit" class="btn btn-primary btn-sm">Editar</a>
-    <hr/>
-    @if (_articleResponse.IsArchived)
-    {
-        <div class="mb-3">
-            <button disabled class="btn btn-warning btn-sm">
-                Arquivar
-            </button>
-            <button class="btn btn-secondary btn-sm" @onclick="() => HandleUnarchive(ArticleId)">
-                Desarquivar
-            </button>
-        </div>
-    }
-    else
-    {
-        <div class="mb-3">
-            <button class="btn btn-warning btn-sm" @onclick="() => HandleArchive(ArticleId)">
-                Arquivar
-            </button>
-            <button disabled class="btn btn-secondary btn-sm">
-                Desarquivar
-            </button>
-        </div>
-    }
+    <AuthorizeView Roles="Admin">
+        <a href="/articles/@ArticleId/edit" class="btn btn-primary btn-sm">Editar</a>
+        <hr/>
+        @if (_articleResponse.IsArchived)
+        {
+            <div class="mb-3">
+                <button disabled class="btn btn-warning btn-sm">
+                    Arquivar
+                </button>
+                <button class="btn btn-secondary btn-sm" @onclick="() => HandleUnarchive(ArticleId)">
+                    Desarquivar
+                </button>
+            </div>
+        }
+        else
+        {
+            <div class="mb-3">
+                <button class="btn btn-warning btn-sm" @onclick="() => HandleArchive(ArticleId)">
+                    Arquivar
+                </button>
+                <button disabled class="btn btn-secondary btn-sm">
+                    Desarquivar
+                </button>
+            </div>
+        }
+    </AuthorizeView>
 
     <!-- Cabeçalho do artigo -->
     <header class="mb-4">
@@ -79,7 +82,6 @@ else
 @code
 {
     [Parameter] public Guid ArticleId { get; set; }
-
     private GetArticleByIdQueryResponse? _articleResponse;
 
     protected override async Task OnInitializedAsync() => await LoadArticle();

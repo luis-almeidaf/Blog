@@ -28,10 +28,9 @@ public class ArticleRepository(BlogDbContext dbContext) : IArticleReadOnlyReposi
             .FirstAsync(article => article.Id == id))!;
     }
 
-    public async Task Add(Article article)
-    {
-        await dbContext.Articles.AddAsync(article);
-    }
+    public async Task Add(Article article) => await dbContext.Articles.AddAsync(article);
+    
+    public void Update(Article article) => dbContext.Articles.Update(article);
 
     public async Task Archive(Guid articleId)
     {
@@ -45,10 +44,5 @@ public class ArticleRepository(BlogDbContext dbContext) : IArticleReadOnlyReposi
         var article = await dbContext.Articles.FirstOrDefaultAsync(a => articleId == a.Id);
         article!.IsArchived = false;
         dbContext.Articles.Update(article!);
-    }
-
-    public void Update(Article article)
-    {
-        dbContext.Articles.Update(article);
     }
 }
