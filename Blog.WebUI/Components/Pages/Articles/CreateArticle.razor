@@ -2,40 +2,52 @@
 @using Blazilla
 @using Blog.Application.Features.Articles.Commands.CreateArticle
 @using MediatR
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IMediator Mediator
 @inject NavigationManager Navigation
+@rendermode InteractiveServer
 
-<h3>Create Article</h3>
+<AuthorizeView Roles="Admin">
+    <Authorized Context="auth">
+        <h3>Create Article</h3>
 
-<EditForm Model="@Command" OnValidSubmit="HandleValidSubmit" FormName="createArticleForm">
-    <FluentValidator/>
-    <ValidationSummary/>
+        <EditForm Model="@Command" OnValidSubmit="HandleValidSubmit" FormName="createArticleForm">
+            <FluentValidator/>
+            <ValidationSummary/>
 
-    <div class="mb-3">
-        <label>Title</label>
-        <InputText @bind-Value="Command.Title" class="form-control"/>
-        <ValidationMessage For="@(() => Command.Title)"/>
-    </div>
+            <div class="mb-3">
+                <label>Title</label>
+                <InputText @bind-Value="Command.Title" class="form-control"/>
+                <ValidationMessage For="@(() => Command.Title)"/>
+            </div>
+
+            <div class="mb-3">
+                <label>Summary</label>
+                <InputText @bind-Value="Command.Summary" class="form-control"
+                           placeholder="20 palavras - 130 caracteres"/>
+                <ValidationMessage For="@(() => Command.Summary)"/>
+            </div>
+
+            <div class="mb-3">
+                <label>Content</label>
+                <InputTextArea @bind-Value="Command.Content" class="form-control" rows="10"/>
+                <ValidationMessage For="@(() => Command.Content)"/>
+            </div>
+
+            <div class="mb-3">
+                <label>Tags</label>
+                <InputText @bind-Value="TagNamesString" class="form-control"
+                           placeholder="ex: dotnet, csharp, back-end"/>
+            </div>
+
+            <button type="submit" class="btn btn-primary">Publicar artigo</button>
+        </EditForm>
+    </Authorized>
     
-    <div class="mb-3">
-        <label>Summary</label>
-        <InputText @bind-Value="Command.Summary" class="form-control" placeholder="20 palavras - 130 caracteres"/>
-        <ValidationMessage For="@(() => Command.Summary)"/>
-    </div>
-
-    <div class="mb-3">
-        <label>Content</label>
-        <InputTextArea @bind-Value="Command.Content" class="form-control" rows="10"/>
-        <ValidationMessage For="@(() => Command.Content)"/>
-    </div>
-
-    <div class="mb-3">
-        <label>Tags</label>
-        <InputText @bind-Value="TagNamesString" class="form-control" placeholder="ex: dotnet, csharp, tutorial, back-end"/>
-    </div>
-
-    <button type="submit" class="btn btn-primary">Publicar artigo</button>
-</EditForm>
+    <NotAuthorized>
+        <p>Você não tem autorização para acessar esse conteúdo.</p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     [SupplyParameterFromForm] private CreateArticleCommand Command { get; set; } = new();

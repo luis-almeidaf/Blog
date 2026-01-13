@@ -3,41 +3,51 @@
 @using Blog.Application.Features.Articles.Commands.EditArticle
 @using Blog.Application.Features.Articles.Queries.GetArticleById
 @using MediatR
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IMediator Mediator
 @inject NavigationManager Navigation
+@rendermode InteractiveServer
 
-<h3>Editar Artigo</h3>
+<AuthorizeView Roles="Admin">
+    <Authorized Context="auth">
+        <h3>Editar Artigo</h3>
 
-<EditForm Model="@ViewModel" OnValidSubmit="HandleValidSubmit" FormName="editArticleForm">
-    <FluentValidator/>
-    <ValidationSummary/>
+        <EditForm Model="@ViewModel" OnValidSubmit="HandleValidSubmit" FormName="editArticleForm">
+            <FluentValidator/>
+            <ValidationSummary/>
 
-    <div class="mb-3">
-        <label>Title</label>
-        <InputText @bind-Value="ViewModel.Title" class="form-control" />
-        <ValidationMessage For="@(() => ViewModel.Title)"/>
-    </div>
-    
-    <div class="mb-3">
-        <label>Summary</label>
-        <InputText @bind-Value="ViewModel.Summary" class="form-control" placeholder="20 palavras - 130 caracteres"/>
-        <ValidationMessage For="@(() => ViewModel.Summary)"/>
-    </div>
+            <div class="mb-3">
+                <label>Title</label>
+                <InputText @bind-Value="ViewModel.Title" class="form-control"/>
+                <ValidationMessage For="@(() => ViewModel.Title)"/>
+            </div>
 
-    <div class="mb-3">
-        <label>Content</label>
-        <InputTextArea @bind-Value="ViewModel.Content" class="form-control" rows="10"/>
-        <ValidationMessage For="@(() => ViewModel.Content)"/>
-    </div>
+            <div class="mb-3">
+                <label>Summary</label>
+                <InputText @bind-Value="ViewModel.Summary" class="form-control"
+                           placeholder="20 palavras - 130 caracteres"/>
+                <ValidationMessage For="@(() => ViewModel.Summary)"/>
+            </div>
 
-    <div class="mb-3">
-        <label>Tags</label>
-        <InputText @bind-Value="TagNamesString" class="form-control" placeholder="ex: dotnet, csharp, tutorial, back-end"/>
-    </div>
+            <div class="mb-3">
+                <label>Content</label>
+                <InputTextArea @bind-Value="ViewModel.Content" class="form-control" rows="10"/>
+                <ValidationMessage For="@(() => ViewModel.Content)"/>
+            </div>
 
-    <button type="submit" class="btn btn-primary">Atualizar</button>
-</EditForm>
+            <div class="mb-3">
+                <label>Tags</label>
+                <InputText @bind-Value="TagNamesString" class="form-control"
+                           placeholder="ex: dotnet, csharp, back-end"/>
+            </div>
 
+            <button type="submit" class="btn btn-primary">Editar</button>
+        </EditForm>
+    </Authorized>
+    <NotAuthorized>
+        <p>Você não tem autorização para acessar esse conteúdo.</p>
+    </NotAuthorized>
+</AuthorizeView>
 
 @code {
     [Parameter] public Guid ArticleId { get; set; }
@@ -89,5 +99,4 @@
 
         Navigation.NavigateTo($"/articles/{ArticleId}");
     }
-
 }

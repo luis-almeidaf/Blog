@@ -42,18 +42,18 @@ public class CustomAuthenticationStateProvider(ILocalStorageService localStorage
         NotifyAuthenticationStateChanged(Task.FromResult(new AuthenticationState(user)));
     }
 
-    private IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
+    private static IEnumerable<Claim> ParseClaimsFromJwt(string jwt)
     {
         var handler = new JwtSecurityTokenHandler();
         var token = handler.ReadJwtToken(jwt);
         var claims = token.Claims.ToList();
 
         var nameClaim = claims.FirstOrDefault(c => c.Type == "unique_name");
-        if (nameClaim != null && !claims.Any(c => c.Type == ClaimTypes.Name))
+        if (nameClaim != null && claims.All(c => c.Type != ClaimTypes.Name))
             claims.Add(new Claim(ClaimTypes.Name, nameClaim.Value));
 
         var roleClaim = claims.FirstOrDefault(c => c.Type == "role");
-        if (roleClaim != null && !claims.Any(c => c.Type == ClaimTypes.Role))
+        if (roleClaim != null && claims.All(c => c.Type != ClaimTypes.Role))
             claims.Add(new Claim(ClaimTypes.Role, roleClaim.Value));
 
         return claims;

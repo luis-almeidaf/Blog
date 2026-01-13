@@ -1,22 +1,32 @@
 @page "/"
 @using Blog.Application.Features.Articles.Queries.GetArticles
-@using Markdig
 @using MediatR
+@using Microsoft.AspNetCore.Components.Authorization
 @inject IMediator Mediator
+@rendermode InteractiveServer
 
-<section class="home-intro mb-5">
-    @((MarkupString)Markdown.ToHtml(
-        "### Seja bem vindo.\n" +
-        "Me chamo Luis, sou desenvolvedor back-end.\n\n" +
-        "Criei esse blog com o intuito de documentar um pouco dos meus aprendizados.\n\n" +
-        "Se algum artigo foi útil para você ou se tiver alguma sugestão de melhoria, fique à vontade para me adicionar no " +
-        "<a href=\"https://www.linkedin.com/in/luis-almeidaf/\" target=\"_blank\" rel=\"noopener noreferrer\">LinkedIn</a>. " +
-        "E acompanhar meus projetos no <a href=\"https://github.com/luis-almeidaf/\" target=\"_blank\" rel=\"noopener noreferrer\">Github</a>."
-    ))
+<AuthorizeView Roles="Admin">
+    <a href="/articles/create" class="btn btn-primary btn-sm">Novo artigo</a>
+    <hr class="my-3"/>
+</AuthorizeView>
+
+<section class="home-intro mb-3">
+    <h3>Seja bem vindo.</h3>
+    <p>Me chamo Luis, sou desenvolvedor back-end.</p>
+    <p>Criei esse blog com o intuito de documentar um pouco dos meus aprendizados.</p>
+    <p>
+        Se algum artigo foi útil para você ou se tiver alguma sugestão de melhoria, fique à vontade para me adicionar no
+        <a href="https://www.linkedin.com/in/luis-almeidaf/" target="_blank" rel="noopener noreferrer">
+            LinkedIn
+        </a>.
+        E acompanhar meus projetos no
+        <a href="https://github.com/luis-almeidaf/" target="_blank" rel="noopener noreferrer">
+            Github
+        </a>.
+    </p>
 </section>
 
 <hr class="my-4"/>
-
 <h5 class="mb-3">Artigos</h5>
 <div class="row g-3 mt-1">
     @foreach (var article in ArticlesResponse.Articles.Where(a => !a.IsArchived))
@@ -37,38 +47,36 @@
                             @article.Summary
                         </h7>
                     </div>
-
                 </div>
             </a>
         </div>
     }
 </div>
 
-<hr class="my-5"/>
+<AuthorizeView Roles="Admin">
+    <hr class="my-5"/>
+    <h5 class="mb-3">Arquivados</h5>
+    <div class="row g-3">
+        @foreach (var article in ArticlesResponse.Articles.Where(a => a.IsArchived))
+        {
+            <div class="col-12 col-md-6 col-lg-4">
+                <a href="/articles/@article.Id" class="text-decoration-none text-muted">
+                    <div class="card h-100 shadow-sm article-card">
+                        <div class="card-body">
+                            <p class="card-text small mb-2">
+                                @article.CreatedAt.ToString("dd/MM/yyyy")
+                            </p>
 
-<h5 class="mb-3">Arquivados</h5>
-<div class="row g-3">
-    @foreach (var article in ArticlesResponse.Articles.Where(a => a.IsArchived))
-    {
-        <div class="col-12 col-md-6 col-lg-4">
-            <a href="/articles/@article.Id" class="text-decoration-none text-muted">
-                <div class="card h-100 shadow-sm article-card">
-                    <div class="card-body">
-                        <p class="card-text small mb-2">
-                            @article.CreatedAt.ToString("dd/MM/yyyy")
-                        </p>
-
-                        <h6 class="card-title mt-2">
-                            @article.Title
-                        </h6>
+                            <h6 class="card-title mt-2">
+                                @article.Title
+                            </h6>
+                        </div>
                     </div>
-
-                </div>
-            </a>
-        </div>
-    }
-</div>
-
+                </a>
+            </div>
+        }
+    </div>
+</AuthorizeView>
 
 @code {
     private GetArticlesQueryResponse ArticlesResponse { get; set; } = new() { Articles = [] };
